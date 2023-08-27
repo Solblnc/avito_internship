@@ -94,9 +94,6 @@ func (d *DataBase) Delete(segment string) error {
 			log.Fatalf("Unable to delete segment segments table: %w", err)
 		}
 	}
-	//if ct.RowsAffected() == 0 {
-	//	log.Fatal(err)
-	//}
 
 	return nil
 }
@@ -106,14 +103,70 @@ func (d *DataBase) AddUser(segmentsAdd []string, segmentsDelete []string, userId
 	conn, err := d.db.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("Unable to acquire a database connection: %w", err)
+		return err
 	}
 	defer conn.Release()
-
 	tx, err := conn.Begin(ctx)
 	if err != nil {
 		log.Fatalf("Unable to start a transaction: %w", err)
+		return err
 	}
 
+	query, values := d.addSegments(segmentsAdd, userId)
+
+	if len(segmentsDelete) > 0 {
+		query, values = d.deleteSegments(segmentsDelete, userId)
+	}
+
+	_, err = tx.Exec(ctx, query, values...)
+	if err != nil {
+		tx.Rollback(ctx)
+		log.Fatalf("Unable to insert segments to users: %w", err)
+		return err
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		log.Fatalf("Unable to commit a transaction: %w", err)
+		return err
+	}
+
+	return nil
+}
+
+type Segment struct {
+	Id   int
+	Name string
+}
+
+func (d *DataBase) GetActualSegments(userId int) []string {
+	ctx := context.Background()
+	conn, err := d.db.Acquire(ctx)
+	if err != nil {
+		log.Fatalf("Unable to acquire a database connection: %w", err)
+	}
+	defer conn.Release()
+
+	row, err := conn.Query(ctx, "SELECT segments.segment_id, segments.segment_name FROM segments_user JOIN segments ON segments_user.segment_id = segments.segment_id  WHERE segments_user.user_id = $1", userId)
+	if err != nil {
+		log.Fatalf("Unable to get actual segments: %w", err)
+	}
+
+	var segments []string
+
+	for row.Next() {
+		var segment Segment
+		err = row.Scan(&segment.Id, &segment.Name)
+		if err != nil {
+			log.Fatalf("cannot scan segment from query: %w", err)
+		}
+		segments = append(segments, segment.Name)
+	}
+
+	return segments
+
+}
+
+func (d *DataBase) addSegments(segmentsAdd []string, userId int) (string, []interface{}) {
 	values := make([]interface{}, 0)
 	placeholders := make([]string, 0)
 	i := 1
@@ -121,8 +174,7 @@ func (d *DataBase) AddUser(segmentsAdd []string, segmentsDelete []string, userId
 	for _, segment := range segmentsAdd {
 		segmentId, err := d.getSegmentID(segment)
 		if err != nil {
-			tx.Rollback(ctx)
-			return err
+			log.Fatal(err)
 		}
 
 		values = append(values, userId, segmentId)
@@ -132,16 +184,28 @@ func (d *DataBase) AddUser(segmentsAdd []string, segmentsDelete []string, userId
 
 	query := fmt.Sprintf("INSERT INTO segments_user (user_id, segment_id, time) VALUES %s", strings.Join(placeholders, ", "))
 
-	_, err = conn.Exec(ctx, query, values...)
-	if err != nil {
-		log.Fatalf("Unable to insert segments to users: %w", err)
-	}
-	err = tx.Commit(ctx)
-	if err != nil {
-		log.Fatalf("Unable to commit a transaction: %w", err)
+	return query, values
+}
+func (d *DataBase) deleteSegments(segmentsDelete []string, userId int) (string, []interface{}) {
+	values := make([]interface{}, 0)
+	placeholders := make([]string, 0)
+	i := 1
+
+	for _, segment := range segmentsDelete {
+		segmentId, err := d.getSegmentID(segment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		values = append(values, userId, segmentId)
+		placeholders = append(placeholders, fmt.Sprintf("($%d, $%d)", i, i+1))
+
+		i += 2
 	}
 
-	return nil
+	query := fmt.Sprintf("DELETE FROM segments_user WHERE (user_id, segment_id) IN (%s)", strings.Join(placeholders, ", "))
+
+	return query, values
 }
 
 func (d *DataBase) CreateUser() error {
@@ -163,7 +227,6 @@ func (d *DataBase) CreateUser() error {
 	return nil
 }
 
-// Функция для получения ID сегмента по его названию
 func (d *DataBase) getSegmentID(segmentName string) (int, error) {
 	var segmentID int
 	ctx := context.Background()

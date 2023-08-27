@@ -3,6 +3,7 @@ package main
 import (
 	"avito_internship/internal/config"
 	"avito_internship/internal/database"
+	"fmt"
 	"log"
 )
 
@@ -24,28 +25,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//_, err = db.Create("avito_tech")
+	//_, err = db.Create("another")
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
 
 	//fmt.Println(id)
 
-	//arr := []string{"test", "avito_tech"}
-	//err = db.AddUser(arr, []string{}, 3)
+	//arrDelete := []string{"test", "avito_tech"}
+	//arrAdd := []string{"test", "avito_tech", "another"}
+
+	//err = db.AddUser(arr, []string{}, 10)
+	//err = db.AddUser(arrAdd, arrDelete, 5)
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
+
+	fmt.Println(db.GetActualSegments(1))
 
 	//err = db.CreateUser()
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
 
-	err = db.Delete("test")
-	if err != nil {
-		log.Fatal(err)
-	}
+	//err = db.Delete("test")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	log.Println("Connected to database")
 }
