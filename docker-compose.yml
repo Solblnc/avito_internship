@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  db:
+    container_name: avito
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: seleroad
+      POSTGRES_PASSWORD: seleroad
+      POSTGRES_DB: avito
+
+    volumes:
+      - ./database_postgres:/var/lib/postgresql/data
+volumes:
+  database_postgres:
