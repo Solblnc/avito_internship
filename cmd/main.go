@@ -3,7 +3,7 @@ package main
 import (
 	"avito_internship/internal/config"
 	"avito_internship/internal/database"
-	"fmt"
+	"avito_internship/internal/server"
 	"log"
 )
 
@@ -25,10 +25,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//_, err = db.Create("another")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	newServer, err := server.NewServer(cfg.Port.Port, db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	newServer.SetupHandlers()
+	newServer.Run()
+
+	_, err = db.Create("another")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//fmt.Println(id)
 
@@ -36,12 +43,12 @@ func main() {
 	//arrAdd := []string{"test", "avito_tech", "another"}
 
 	//err = db.AddUser(arr, []string{}, 10)
-	//err = db.AddUser(arrAdd, arrDelete, 5)
+	//err = db.AddUser(arrAdd, []string{}, 6)
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
 
-	fmt.Println(db.GetActualSegments(1))
+	//fmt.Println(db.GetActualSegments(1))
 
 	//err = db.CreateUser()
 	//if err != nil {

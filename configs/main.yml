@@ -5,3 +5,6 @@ pg_config:
   DB_NAME: "avito"
   DB_PASSWORD: "seleroad"
   SSL_MODE: "disable"
+
+server_config:
+  PORT: ":8080"
