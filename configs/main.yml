@@ -1,5 +1,5 @@
 pg_config:
-  DB_HOST: "localhost"
+  DB_HOST: "db"
   DB_PORT: "5432"
   DB_USER: "seleroad"
   DB_NAME: "avito"

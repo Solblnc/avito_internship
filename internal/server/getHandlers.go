@@ -16,7 +16,7 @@ func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 
 	userId, err := strconv.Atoi(Id[0])
 	if err != nil {
-		jsonRespond(w, http.StatusInternalServerError, []byte(`server error`))
+		jsonRespond(w, http.StatusInternalServerError, []byte(`app error`))
 		return
 	}
 
@@ -26,7 +26,7 @@ func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 
 	res, err := json.Marshal(result)
 	if err != nil {
-		jsonRespond(w, http.StatusInternalServerError, []byte(`server error`))
+		jsonRespond(w, http.StatusInternalServerError, []byte(`app error`))
 		return
 	}
 	jsonRespond(w, 200, res)

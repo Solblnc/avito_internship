@@ -1,17 +1,42 @@
-version: '3.8'
-services:
-  db:
-    container_name: avito
-    image: postgres:latest
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: seleroad
-      POSTGRES_PASSWORD: seleroad
-      POSTGRES_DB: avito
+version: "3.8"
 
+services:
+  #db
+  db:
+    image: postgres:14-alpine
+    container_name: "avito_db"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=seleroad
+      - POSTGRES_USER=seleroad
+      - POSTGRES_PASSWORD=seleroad
+    networks:
+      - fullstack
     volumes:
-      - ./database_postgres:/var/lib/postgresql/data
+      - database_postgres:/var/lib/postgresql/data
+
+  #api
+  api:
+    build: .
+    command: ./app
+    container_name: "avito_api"
+    environment:
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_USER: "seleroad"
+      DB_NAME: "avito"
+      DB_PASSWORD: "seleroad"
+      SSL_MODE: "disable"
+    ports:
+      - "8080:8080"
+    networks:
+      - fullstack
+    depends_on:
+      - db
+
 volumes:
   database_postgres:
+networks:
+  fullstack:
+    driver: bridge

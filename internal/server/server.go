@@ -16,7 +16,7 @@ func NewServer(port string, db *database.DataBase) (*Server, error) {
 }
 
 func (s *Server) setupGetHandlers() {
-	http.HandleFunc("/api/v1/get_segments", s.GetSegments)
+	http.HandleFunc("/api/v1/get_segments", loggerMiddleware(s.GetSegments))
 }
 
 func (s *Server) setupPostHandlers() {
