@@ -30,21 +30,13 @@ func (s *Server) setupPostHandlers() {
 	http.HandleFunc("/api/v1/create_segment", loggerMiddleware(s.CreateSegment))
 	http.HandleFunc("/api/v1/delete_segment", loggerMiddleware(s.DeleteSegment))
 	http.HandleFunc("/api/v1/add_user_segment", loggerMiddleware(s.AddUserToSegment))
+	http.HandleFunc("/api/v1/add_user_deadline", loggerMiddleware(s.AddUserDeadline))
 }
 
 func (s *Server) SetupHandlers() {
 	s.setupGetHandlers()
 	s.setupPostHandlers()
 }
-
-//SELECT DISTINCT user_id, segment_id,time  FROM segments_user WHERE EXTRACT(year FROM time) = 2023  AND EXTRACT(month FROM time) = 8;
-//SELECT DISTINCT user_id, segments.name,time  FROM segments_user join segments on segment_id = segment_id WHERE EXTRACT(year FROM time) = 2023  AND EXTRACT(month FROM time) = 8;
-
-//SELECT DISTINCT user_id, segments.segment_name, segments_user.time
-//FROM segments_user
-//JOIN segments ON segments.segment_id = segments_user.segment_id
-//WHERE EXTRACT(year FROM segments_user.time) = 2023
-//AND EXTRACT(month FROM segments_user.time) = 8;
 
 func (s *Server) Run() error {
 

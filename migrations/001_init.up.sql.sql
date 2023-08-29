@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS segments (
 );
 
 
-
 CREATE TABLE IF NOT EXISTS users (
     user_id serial PRIMARY KEY
 );
@@ -12,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS segments_user (
   user_id INT REFERENCES users(user_id),
   segment_id INT REFERENCES segments(segment_id),
-  time timestamp NOT NULL
+  time timestamp NOT NULL DEFAULT now(),
+  deadline timestamp
 );
 
 ---- create above / drop below ----

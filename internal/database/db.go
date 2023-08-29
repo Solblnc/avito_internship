@@ -53,16 +53,28 @@ func NewDataBase(cfg Config) (*DataBase, error) {
 	Migrate(conn.Conn(), context.Background())
 	conn.Release()
 
+	log.Println("Connected to database")
+
 	return &DataBase{db: db}, nil
 }
 
-func (d *DataBase) Create(segment string) (int, error) {
+func (d *DataBase) Create(segment string, percent uint) (int, error) {
 	ctx := context.Background()
 	conn, err := d.db.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("Unable to acquire a database connection: %w", err)
 	}
 	defer conn.Release()
+
+	var totalUsers int
+
+	res := conn.QueryRow(ctx, "SELECT COUNT(*) FROM users")
+	err = res.Scan(&totalUsers)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	usersInSegment := int(uint(totalUsers-1) * percent / 100)
 
 	row := conn.QueryRow(ctx, "INSERT INTO segments (segment_name) values ($1) RETURNING segment_id", segment)
 
@@ -72,9 +84,38 @@ func (d *DataBase) Create(segment string) (int, error) {
 		log.Fatalf("Unable to scan id (segments): %w", err)
 	}
 
+	_, err = conn.Exec(ctx, "INSERT INTO segments_user (user_id, segment_id) SELECT user_id, $1 FROM users ORDER BY random() LIMIT $2", id, usersInSegment)
+	if err != nil {
+		return 0, fmt.Errorf("unable to insert users into segments_user: %w", err)
+	}
+
+	if err != nil {
+		log.Fatalf("Unable to update max_users (segments): %w", err)
+	}
+
 	return id, nil
 
 }
+
+//func (d *DataBase) Create(segment string) (int, error) {
+//	ctx := context.Background()
+//	conn, err := d.db.Acquire(ctx)
+//	if err != nil {
+//		log.Fatalf("Unable to acquire a database connection: %w", err)
+//	}
+//	defer conn.Release()
+//
+//	row := conn.QueryRow(ctx, "INSERT INTO segments (segment_name) values ($1) RETURNING segment_id", segment)
+//
+//	var id int
+//	err = row.Scan(&id)
+//	if err != nil {
+//		log.Fatalf("Unable to scan id (segments): %w", err)
+//	}
+//
+//	return id, nil
+//
+//}
 
 func (d *DataBase) Delete(segment string) error {
 	ctx := context.Background()
@@ -86,9 +127,7 @@ func (d *DataBase) Delete(segment string) error {
 
 	_, err = conn.Exec(ctx, "DELETE FROM segments_user WHERE segment_id = (SELECT segment_id FROM segments WHERE segment_name = $1 LIMIT 1)", segment)
 	if err != nil {
-		if err != nil {
-			log.Fatalf("Unable to delete segment from segments_user table: %w", err)
-		}
+		log.Fatalf("Unable to delete segment from segments_user table: %w", err)
 	}
 
 	_, err = conn.Exec(ctx, "  DELETE FROM segments WHERE segment_name = $1", segment)

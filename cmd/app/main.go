@@ -25,10 +25,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//err = db.CreateUser()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	newServer, err := server.NewServer(cfg.Port.Port, db)
 	if err != nil {
@@ -39,5 +38,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Connected to database")
 }

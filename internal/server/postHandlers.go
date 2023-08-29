@@ -3,6 +3,7 @@ package server
 import (
 	"avito_internship/internal/model"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -28,7 +29,7 @@ func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 		jsonRespond(w, http.StatusBadRequest, []byte(`error in unmarshalling a body`))
 		return
 	}
-	_, err = s.DB.Create(segment.Name)
+	_, err = s.DB.Create(segment.Name, segment.Percent)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot create a segment`))
 		return
@@ -79,4 +80,26 @@ func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonRespond(w, http.StatusOK, []byte(`segments are added/deleted to user`))
+}
+
+func (s *Server) AddUserDeadline(w http.ResponseWriter, r *http.Request) {
+	var input model.DeadlineInput
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		jsonRespond(w, http.StatusInternalServerError, []byte(`error in reading a body`))
+		return
+	}
+
+	if err = json.Unmarshal(data, &input); err != nil {
+		jsonRespond(w, http.StatusBadRequest, []byte(`error in unmarshalling a body`))
+		return
+	}
+	fmt.Println(&input)
+	err = s.DB.AddSegmentDeadline(input.Ttl, input.SegmentName, input.UserId)
+	if err != nil {
+		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot add/delete segments to user`))
+		return
+	}
+
+	jsonRespond(w, http.StatusOK, []byte(`segments with deadline added`))
 }

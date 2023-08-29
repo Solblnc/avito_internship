@@ -11,32 +11,32 @@ services:
       - POSTGRES_DB=seleroad
       - POSTGRES_USER=seleroad
       - POSTGRES_PASSWORD=seleroad
-    networks:
-      - fullstack
+#    networks:
+#      - fullstack
     volumes:
       - database_postgres:/var/lib/postgresql/data
 
   #api
-  api:
-    build: .
-    command: ./app
-    container_name: "avito_api"
-    environment:
-      DB_HOST: "db"
-      DB_PORT: "5432"
-      DB_USER: "seleroad"
-      DB_NAME: "avito"
-      DB_PASSWORD: "seleroad"
-      SSL_MODE: "disable"
-    ports:
-      - "8080:8080"
-    networks:
-      - fullstack
-    depends_on:
-      - db
+#  api:
+#    build: .
+#    command: ./app
+#    container_name: "avito_api"
+#    environment:
+#      DB_HOST: "db"
+#      DB_PORT: "5432"
+#      DB_USER: "seleroad"
+#      DB_NAME: "avito"
+#      DB_PASSWORD: "seleroad"
+#      SSL_MODE: "disable"
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - fullstack
+#    depends_on:
+#      - db
 
 volumes:
   database_postgres:
-networks:
-  fullstack:
-    driver: bridge
+#networks:
+#  fullstack:
+#    driver: bridge

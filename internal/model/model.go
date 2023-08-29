@@ -10,12 +10,19 @@ type UserSegments struct {
 }
 
 type Segment struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	Percent uint   `json:"percent"`
 }
 
 type InputAddUser struct {
 	SegmentsAdd    []string `json:"segments_add"`
 	SegmentsDelete []string `json:"segments_delete"`
 	UserId         int      `json:"user_id"`
+}
+
+type DeadlineInput struct {
+	Ttl         int    `json:"ttl"`
+	SegmentName string `json:"segment_name"`
+	UserId      int    `json:"user_id"`
 }
