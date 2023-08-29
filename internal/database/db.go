@@ -2,10 +2,13 @@ package database
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -216,7 +219,7 @@ func (d *DataBase) CreateUser() error {
 	}
 	defer conn.Release()
 
-	for i := 0; i <= 10; i++ {
+	for i := 0; i <= 20; i++ {
 		row := conn.QueryRow(ctx, "INSERT INTO users (user_id) values ($1) RETURNING user_id", i)
 		var id int
 		err = row.Scan(&id)
@@ -239,4 +242,49 @@ func (d *DataBase) getSegmentID(segmentName string) (int, error) {
 	conn.QueryRow(ctx, "SELECT segment_id FROM segments WHERE segment_name = $1", segmentName).Scan(&segmentID)
 
 	return segmentID, nil
+}
+
+func (d *DataBase) GetHistory(year, month int) (string, error) {
+	ctx := context.Background()
+	conn, err := d.db.Acquire(ctx)
+	if err != nil {
+		log.Fatalf("Unable to acquire a database connection: %w", err)
+	}
+	defer conn.Release()
+
+	row, err := conn.Query(ctx, "SELECT DISTINCT user_id, segments.segment_name, segments_user.time "+
+		"FROM segments_user "+
+		"JOIN segments ON segments.segment_id = segments_user.segment_id "+
+		"WHERE EXTRACT(year FROM segments_user.time) = $1 "+
+		"AND EXTRACT(month FROM segments_user.time) = $2;", year, month)
+	if err != nil {
+		log.Fatalf("Unable to get history data from database: %w", err)
+	}
+
+	var buf strings.Builder
+	csvBuilder := csv.NewWriter(&buf)
+	for row.Next() {
+		var (
+			userId      int
+			segmentName string
+			time        time.Time
+		)
+
+		err = row.Scan(&userId, &segmentName, &time)
+		if err != nil {
+			return "", err
+		}
+
+		err = csvBuilder.Write([]string{
+			strconv.Itoa(userId),
+			segmentName,
+			time.String(),
+		})
+		if err != nil {
+			return "", err
+		}
+	}
+	csvBuilder.Flush()
+	return buf.String(), nil
+
 }

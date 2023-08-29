@@ -7,6 +7,15 @@ import (
 	"net/http"
 )
 
+func (s *Server) CreateUsers(w http.ResponseWriter, r *http.Request) {
+	err := s.DB.CreateUser()
+	if err != nil {
+		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot create users`))
+		return
+	}
+	jsonRespond(w, http.StatusOK, []byte(`users are created`))
+}
+
 func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 	var segment model.Segment
 	data, err := io.ReadAll(r.Body)
