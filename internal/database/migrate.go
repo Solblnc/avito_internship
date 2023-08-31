@@ -28,5 +28,5 @@ func Migrate(conn *pgx.Conn, ctx context.Context) {
 		log.Fatalf("Unable to get current schema version: %v\n", err)
 	}
 
-	log.Println("Migration done. Current schema version: %v\n", ver)
+	log.Println("Migration done: %v", ver)
 }

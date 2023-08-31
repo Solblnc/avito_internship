@@ -20,13 +20,6 @@ type Config struct {
 	SSLMode  string `mapstructure:"SSL_MODE"`
 }
 
-type Repository interface {
-	Create(segment string) (int, error)
-	Delete(segment string) error
-	AddUser(segmentsAdd []string, segmentsDelete []string, userId int) error
-	GetSegments(userId int) []string
-}
-
 type DataBase struct {
 	db *pgxpool.Pool
 }
@@ -96,26 +89,6 @@ func (d *DataBase) Create(segment string, percent uint) (int, error) {
 	return id, nil
 
 }
-
-//func (d *DataBase) Create(segment string) (int, error) {
-//	ctx := context.Background()
-//	conn, err := d.db.Acquire(ctx)
-//	if err != nil {
-//		log.Fatalf("Unable to acquire a database connection: %w", err)
-//	}
-//	defer conn.Release()
-//
-//	row := conn.QueryRow(ctx, "INSERT INTO segments (segment_name) values ($1) RETURNING segment_id", segment)
-//
-//	var id int
-//	err = row.Scan(&id)
-//	if err != nil {
-//		log.Fatalf("Unable to scan id (segments): %w", err)
-//	}
-//
-//	return id, nil
-//
-//}
 
 func (d *DataBase) Delete(segment string) error {
 	ctx := context.Background()

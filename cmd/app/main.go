@@ -1,11 +1,22 @@
 package main
 
 import (
+	_ "avito_internship/cmd/app/docs"
 	"avito_internship/internal/config"
 	"avito_internship/internal/database"
 	"avito_internship/internal/server"
+	"avito_internship/internal/service"
 	"log"
 )
+
+// @title Dynamic User Segmentation API
+// @version         1.0
+// @description     User segmentation service for avito
+
+// @contact.name   Emil Shayhulov
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 
 func main() {
 	cfg, err := config.Init()
@@ -25,16 +36,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	Service := service.NewService(db)
 
-	newServer, err := server.NewServer(cfg.Port.Port, db)
-	if err != nil {
-		log.Fatal(err)
-	}
-	newServer.SetupHandlers()
-	if err = newServer.Run(); err != nil {
+	httpHandler := server.NewServer(Service)
+	if err = httpHandler.Serve(); err != nil {
 		log.Fatal(err)
 	}
 

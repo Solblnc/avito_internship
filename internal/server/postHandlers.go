@@ -8,15 +8,15 @@ import (
 	"net/http"
 )
 
-func (s *Server) CreateUsers(w http.ResponseWriter, r *http.Request) {
-	err := s.DB.CreateUser()
-	if err != nil {
-		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot create users`))
-		return
-	}
-	jsonRespond(w, http.StatusOK, []byte(`users are created`))
-}
-
+// @Summary		create segments
+// @Description	create segment and randomly add users
+// @Tags			segment
+// @Param			segmentName	path		string					true	"segment name"
+// @Param			percent 	path		int 					true	"percentage"
+// @Success		200		"segment is created"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/user/create_segment [post]
 func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 	var segment model.Segment
 	data, err := io.ReadAll(r.Body)
@@ -29,7 +29,7 @@ func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 		jsonRespond(w, http.StatusBadRequest, []byte(`error in unmarshalling a body`))
 		return
 	}
-	_, err = s.DB.Create(segment.Name, segment.Percent)
+	_, err = s.Service.Create(segment.Name, segment.Percent)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot create a segment`))
 		return
@@ -39,6 +39,14 @@ func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// @Summary		delete segment
+// @Description	delete segment
+// @Tags			segment
+// @Param			segmentName	path		string					true	"segment name"
+// @Success		200		"segment is deleted"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/user/get_segments{id} [delete]
 func (s *Server) DeleteSegment(w http.ResponseWriter, r *http.Request) {
 	var segment model.Segment
 	data, err := io.ReadAll(r.Body)
@@ -51,7 +59,7 @@ func (s *Server) DeleteSegment(w http.ResponseWriter, r *http.Request) {
 		jsonRespond(w, http.StatusBadRequest, []byte(`error in unmarshalling a body`))
 		return
 	}
-	err = s.DB.Delete(segment.Name)
+	err = s.Service.Delete(segment.Name)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot delete a segment`))
 		return
@@ -61,6 +69,14 @@ func (s *Server) DeleteSegment(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// @Summary		add/delete segments to user
+// @Description	adding and deleting specific segments for specific user
+// @Tags			user
+// @Param			userId	path		int					true	"User id"
+// @Success		200		"Segments for user:"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/segment/add_user_segment [post]
 func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 	var input model.InputAddUser
 	data, err := io.ReadAll(r.Body)
@@ -73,7 +89,7 @@ func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 		jsonRespond(w, http.StatusBadRequest, []byte(`error in unmarshalling a body`))
 		return
 	}
-	err = s.DB.AddUser(input.SegmentsAdd, input.SegmentsDelete, input.UserId)
+	err = s.Service.AddUser(input.SegmentsAdd, input.SegmentsDelete, input.UserId)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot add/delete segments to user`))
 		return
@@ -82,6 +98,16 @@ func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 	jsonRespond(w, http.StatusOK, []byte(`segments are added/deleted to user`))
 }
 
+// @Summary		add segments to user with deadline
+// @Description	adding segments to user with expire date (subscription)
+// @Tags			segment
+// @Param			ttl 	path		int					true	"ttl"
+// @Param			segmentName 	path		string					true	"segment name"
+// @Param			userId	path		int					true	"User id"
+// @Success		200		"Segments for user:"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/segment/add_user_segment [post]
 func (s *Server) AddUserDeadline(w http.ResponseWriter, r *http.Request) {
 	var input model.DeadlineInput
 	data, err := io.ReadAll(r.Body)
@@ -95,7 +121,7 @@ func (s *Server) AddUserDeadline(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(&input)
-	err = s.DB.AddSegmentDeadline(input.Ttl, input.SegmentName, input.UserId)
+	err = s.Service.AddSegmentDeadline(input.Ttl, input.SegmentName, input.UserId)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot add/delete segments to user`))
 		return

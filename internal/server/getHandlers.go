@@ -6,6 +6,14 @@ import (
 	"strconv"
 )
 
+// @Summary	GetSegments
+// @Description	get segments for specific user by userId
+// @Tags user
+// @Param userId path int true "User id"
+// @Success 200	"Segments for user:"
+// @Failure	400 {object} "invalid request"
+// @Failure	500 {object} "app error"
+// @Router	/user/get_segments{id} [get]
 func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 	m := r.URL.Query()
 	Id, ok := m["user_id"]
@@ -22,7 +30,7 @@ func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 
 	result := make([]string, 0)
 
-	result = s.DB.GetActualSegments(userId)
+	result = s.Service.GetActualSegments(userId)
 
 	res, err := json.Marshal(result)
 	if err != nil {
@@ -32,6 +40,15 @@ func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 	jsonRespond(w, 200, res)
 }
 
+// @Summary		get user segments history
+// @Description	get user segments history for year and month
+// @Tags			user
+// @Param			year	path		int					true	"year"
+// @Param			month	path		int					true	"month"
+// @Success		200		"csv file completed"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/segment/get_history{year}{month} [get]
 func (s *Server) GetHistory(w http.ResponseWriter, r *http.Request) {
 	m := r.URL.Query()
 	Year, ok := m["year"]
@@ -53,7 +70,7 @@ func (s *Server) GetHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := s.DB.GetHistory(year, month)
+	result, err := s.Service.GetHistory(year, month)
 	if err != nil {
 		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot get history from database`))
 		return
@@ -69,4 +86,20 @@ func (s *Server) GetHistory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonRespond(w, 200, []byte(`csv file completed`))
+}
+
+// @Summary		create users
+// @Description	create test users just for testing an app
+// @Tags			user
+// @Success		200		"users are created"
+// @Failure		400		{object}		"invalid request"
+// @Failure		500		{object}		"app error"
+// @Router			/user/create_user [get]
+func (s *Server) CreateUsers(w http.ResponseWriter, r *http.Request) {
+	err := s.Service.CreateUser()
+	if err != nil {
+		jsonRespond(w, http.StatusInternalServerError, []byte(`cannot create users`))
+		return
+	}
+	jsonRespond(w, http.StatusOK, []byte(`users are created`))
 }
