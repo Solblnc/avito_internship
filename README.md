@@ -61,24 +61,30 @@ make down
 Использовал Postman.
 
 /api/v1/segment/create_segment - Создание сегмента:
+
 ![](img.png)
 
 /api/v1/segment/delete_segment - Удаление сегмента по имени
+
 ![](img1.png)
 
 /api/v1/segment/add_user_segment - Добавить/удалить сегменты пользователю
+
 ![](img3.png)
 
 /api/v1/segment/get_history - csv файл с историей операций
+
 ![](img4.png)
 
 /api/v1/user/get_segments{id} - Получение сегментов по userId
+
 ![](img5.png)
 
 ## Swagger-Documentation
 При запуске проекта - http://localhost:8080/swagger/index.html#/
 
 Пример:
+
 ![](img6.png)
 
 
