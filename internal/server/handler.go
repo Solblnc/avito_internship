@@ -1,7 +1,7 @@
 package server
 
 import (
-	_ "avito_internship/cmd/app/docs"
+	_ "avito_internship/docs"
 	"context"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger/v2"

@@ -1,0 +1,139 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact:
+    name: Emil Shayhulov
+  description: User segmentation service for avito
+  title: Dynamic User Segmentation API
+  version: "1.0"
+paths:
+  /segment/add_user_deadline:
+    post:
+      description: adding segments to user with expire date (subscription)
+      parameters:
+      - description: ttl
+        in: path
+        name: ttl
+        required: true
+        type: integer
+      - description: segment name
+        in: path
+        name: segmentName
+        required: true
+        type: string
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 'Segments for user:'
+      summary: add segments to user with deadline
+      tags:
+      - segment
+  /segment/add_user_segment:
+    post:
+      description: adding and deleting specific segments for specific user
+      parameters:
+      - description: segment name
+        in: path
+        name: segmentAdd
+        required: true
+        type: string
+      - description: segment name
+        in: path
+        name: segmentDelete
+        required: true
+        type: string
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 'Segments for user:'
+      summary: add/delete segments to user
+      tags:
+      - user
+  /segment/get_history{year}{month}:
+    get:
+      description: get user segments history for year and month
+      parameters:
+      - description: year
+        in: path
+        name: year
+        required: true
+        type: integer
+      - description: month
+        in: path
+        name: month
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: csv file completed
+      summary: get user segments history
+      tags:
+      - user
+  /user/create_segment:
+    post:
+      description: create segment and randomly add users
+      parameters:
+      - description: segment name
+        in: path
+        name: segmentName
+        required: true
+        type: string
+      - description: percentage
+        in: path
+        name: percent
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: segment is created
+      summary: create segments
+      tags:
+      - segment
+  /user/create_user:
+    get:
+      description: create test users just for testing an app
+      responses:
+        "200":
+          description: users are created
+      summary: create users
+      tags:
+      - user
+  /user/delete_segment:
+    delete:
+      description: delete segment
+      parameters:
+      - description: segment name
+        in: path
+        name: segmentName
+        required: true
+        type: string
+      responses:
+        "200":
+          description: segment is deleted
+      summary: delete segment
+      tags:
+      - segment
+  /user/get_segments{id}:
+    get:
+      description: get segments for specific user by userId
+      parameters:
+      - description: User id
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 'Segments for user:'
+      summary: GetSegments
+      tags:
+      - user
+swagger: "2.0"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "avito_internship/cmd/app/docs"
+	_ "avito_internship/docs"
 	"avito_internship/internal/config"
 	"avito_internship/internal/database"
 	"avito_internship/internal/server"

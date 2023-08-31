@@ -1,0 +1,209 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "User segmentation service for avito",
+        "title": "Dynamic User Segmentation API",
+        "contact": {
+            "name": "Emil Shayhulov"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/segment/add_user_deadline": {
+            "post": {
+                "description": "adding segments to user with expire date (subscription)",
+                "tags": [
+                    "segment"
+                ],
+                "summary": "add segments to user with deadline",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ttl",
+                        "name": "ttl",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "segment name",
+                        "name": "segmentName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Segments for user:"
+                    }
+                }
+            }
+        },
+        "/segment/add_user_segment": {
+            "post": {
+                "description": "adding and deleting specific segments for specific user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "add/delete segments to user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "segment name",
+                        "name": "segmentAdd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "segment name",
+                        "name": "segmentDelete",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Segments for user:"
+                    }
+                }
+            }
+        },
+        "/segment/get_history{year}{month}": {
+            "get": {
+                "description": "get user segments history for year and month",
+                "tags": [
+                    "user"
+                ],
+                "summary": "get user segments history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "year",
+                        "name": "year",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "month",
+                        "name": "month",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "csv file completed"
+                    }
+                }
+            }
+        },
+        "/user/create_segment": {
+            "post": {
+                "description": "create segment and randomly add users",
+                "tags": [
+                    "segment"
+                ],
+                "summary": "create segments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "segment name",
+                        "name": "segmentName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "percentage",
+                        "name": "percent",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "segment is created"
+                    }
+                }
+            }
+        },
+        "/user/create_user": {
+            "get": {
+                "description": "create test users just for testing an app",
+                "tags": [
+                    "user"
+                ],
+                "summary": "create users",
+                "responses": {
+                    "200": {
+                        "description": "users are created"
+                    }
+                }
+            }
+        },
+        "/user/delete_segment": {
+            "delete": {
+                "description": "delete segment",
+                "tags": [
+                    "segment"
+                ],
+                "summary": "delete segment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "segment name",
+                        "name": "segmentName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "segment is deleted"
+                    }
+                }
+            }
+        },
+        "/user/get_segments{id}": {
+            "get": {
+                "description": "get segments for specific user by userId",
+                "tags": [
+                    "user"
+                ],
+                "summary": "GetSegments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Segments for user:"
+                    }
+                }
+            }
+        }
+    }
+}

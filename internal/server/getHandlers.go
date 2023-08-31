@@ -1,6 +1,7 @@
 package server
 
 import (
+	_ "avito_internship/docs"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -11,8 +12,6 @@ import (
 // @Tags user
 // @Param userId path int true "User id"
 // @Success 200	"Segments for user:"
-// @Failure	400 {object} "invalid request"
-// @Failure	500 {object} "app error"
 // @Router	/user/get_segments{id} [get]
 func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 	m := r.URL.Query()
@@ -46,8 +45,6 @@ func (s *Server) GetSegments(w http.ResponseWriter, r *http.Request) {
 // @Param			year	path		int					true	"year"
 // @Param			month	path		int					true	"month"
 // @Success		200		"csv file completed"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
 // @Router			/segment/get_history{year}{month} [get]
 func (s *Server) GetHistory(w http.ResponseWriter, r *http.Request) {
 	m := r.URL.Query()
@@ -92,8 +89,6 @@ func (s *Server) GetHistory(w http.ResponseWriter, r *http.Request) {
 // @Description	create test users just for testing an app
 // @Tags			user
 // @Success		200		"users are created"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
 // @Router			/user/create_user [get]
 func (s *Server) CreateUsers(w http.ResponseWriter, r *http.Request) {
 	err := s.Service.CreateUser()

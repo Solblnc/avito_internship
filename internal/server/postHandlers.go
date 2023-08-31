@@ -1,6 +1,7 @@
 package server
 
 import (
+	_ "avito_internship/docs"
 	"avito_internship/internal/model"
 	"encoding/json"
 	"fmt"
@@ -14,8 +15,6 @@ import (
 // @Param			segmentName	path		string					true	"segment name"
 // @Param			percent 	path		int 					true	"percentage"
 // @Success		200		"segment is created"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
 // @Router			/user/create_segment [post]
 func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 	var segment model.Segment
@@ -44,9 +43,7 @@ func (s *Server) CreateSegment(w http.ResponseWriter, r *http.Request) {
 // @Tags			segment
 // @Param			segmentName	path		string					true	"segment name"
 // @Success		200		"segment is deleted"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
-// @Router			/user/get_segments{id} [delete]
+// @Router			/user/delete_segment [delete]
 func (s *Server) DeleteSegment(w http.ResponseWriter, r *http.Request) {
 	var segment model.Segment
 	data, err := io.ReadAll(r.Body)
@@ -72,10 +69,10 @@ func (s *Server) DeleteSegment(w http.ResponseWriter, r *http.Request) {
 // @Summary		add/delete segments to user
 // @Description	adding and deleting specific segments for specific user
 // @Tags			user
+// @Param			segmentAdd 	path		string					true	"segment name"
+// @Param			segmentDelete 	path		string					true	"segment name"
 // @Param			userId	path		int					true	"User id"
 // @Success		200		"Segments for user:"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
 // @Router			/segment/add_user_segment [post]
 func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 	var input model.InputAddUser
@@ -105,9 +102,7 @@ func (s *Server) AddUserToSegment(w http.ResponseWriter, r *http.Request) {
 // @Param			segmentName 	path		string					true	"segment name"
 // @Param			userId	path		int					true	"User id"
 // @Success		200		"Segments for user:"
-// @Failure		400		{object}		"invalid request"
-// @Failure		500		{object}		"app error"
-// @Router			/segment/add_user_segment [post]
+// @Router			/segment/add_user_deadline [post]
 func (s *Server) AddUserDeadline(w http.ResponseWriter, r *http.Request) {
 	var input model.DeadlineInput
 	data, err := io.ReadAll(r.Body)
