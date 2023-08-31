@@ -64,9 +64,6 @@ make down
 
 ![](img.png)
 
-/api/v1/segment/delete_segment - Удаление сегмента по имени
-
-![](img1.png)
 
 /api/v1/segment/add_user_segment - Добавить/удалить сегменты пользователю
 
